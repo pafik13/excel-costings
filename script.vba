@@ -255,8 +255,6 @@ Sub copyValue(ByRef pFrom As Range, ByRef pTo As Range)
 
 End Sub
 
-
-
 Function getOrCreateSheet(ByRef pSheetName As String) As Worksheet
     On Error GoTo ErrorHandler
 
@@ -270,4 +268,22 @@ ErrorHandler:
     Exit Function
 End Function
 
+Function getNextId()
+    Dim sheetTech As Worksheet
+    Set sheetTech = getOrCreateSheet("òåõí")
+    
+    sheetTech.Range("B2").Value = sheetTech.Range("B2").Value + 1
+    getNextId = sheetTech.Range("B1").Value & "_" & sheetTech.Range("B2").Value
+    
+    MsgBox getNextId
+End Function
+
+Function getLastId()
+    Dim sheetTech As Worksheet
+    Set sheetTech = getOrCreateSheet("òåõí")
+    
+    getLastId = sheetTech.Range("B1").Value & "_" & sheetTech.Range("B2").Value
+    
+    MsgBox getLastId
+End Function
 
