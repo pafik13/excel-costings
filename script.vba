@@ -18,8 +18,8 @@ Sub copyFromCostsToTech()
     
     Dim vId As String
     Dim vRowIndex As Integer
-    If sheetCosts.Range("J3").Value <> "" Then
-        vId = CStr(sheetCosts.Range("J3").Value)
+    If rngId.Value <> "" Then
+        vId = CStr(rngId.Value)
         
         Set rngId = sheetTech.Range("A" & rngTableStart.Value, "A" & rngTableEnd.Value).Find(vId)
         If rngId Is Nothing Then
@@ -37,6 +37,9 @@ Sub copyFromCostsToTech()
         sheetTech.Range("A" & vRowIndex).Value = vId
     End If
         
+    Set rngId = sheetTech.Range("E1")
+    rngId.Value = vId
+    
     'Exit Sub
     
     
@@ -157,11 +160,49 @@ Sub copyFromTechToTable()
     Set sheetCosts = getOrCreateSheet("смета")
     Set sheetTable = getOrCreateSheet("таблица")
     
+    Dim rngId As Range
+    Dim rngTableStart As Range
+    Dim rngTableEnd As Range
+    Set rngId = sheetTech.Range("E1")
+    Set rngTableStart = sheetTech.Range("B3")
+    Set rngTableEnd = sheetTech.Range("B4")
+    
+    Dim vId As String
+    Dim vRowIndexFrom As Integer
+    Dim vRowIndexTo As Integer
+    If rngId.Value <> "" Then
+        vId = CStr(rngId.Value)
+        
+        Set rngId = sheetTech.Range("A" & rngTableStart.Value, "A" & rngTableEnd.Value).Find(vId)
+        If rngId Is Nothing Then
+            Err.Raise -20001, "Копирование из Техн", "Не найден текущий идентификатор"
+        Else
+            vRowIndexFrom = rngId.Row
+        End If
+    End If
+    
+    Set rngId = sheetTable.Range("A2")
+    If rngId.Value = "" Then
+        rngId.Value = vId
+        vRowIndexTo = rngId.Row
+    Else
+        Set rngId = sheetTable.Range("A1", sheetTable.Range("A1").End(xlDown)).Find(vId)
+        If rngId Is Nothing Then
+            Set rngId = sheetTable.Range("A1").End(xlDown).Offset(1, 0)
+            rngId.Value = vId
+            vRowIndexTo = rngId.Row
+        Else
+            vRowIndexTo = rngId.Row
+        End If
+        
+    End If
+    
+    
     ' Headers
-    copyValue sheetTech.Range("B1", "G1"), sheetTable.Range("B1", "G1")
+    'copyValue sheetTech.Range("B1", "G1"), sheetTable.Range("B1", "G1")
     
     ' Values
-    copyValue sheetTech.Range("B2", "G2"), sheetTable.Range("B2", "G2")
+    copyValue sheetTech.Range("B" & vRowIndexFrom, "G" & vRowIndexFrom), sheetTable.Range("B" & vRowIndexTo, "G" & vRowIndexTo)
     
     Dim sumCash As Double
     Dim sumNonCash As Double
@@ -169,7 +210,7 @@ Sub copyFromTechToTable()
     sumCash = 0#
     sumNonCash = 0#
     
-    For Each cell In sheetTech.Range("H2", "AL2").Cells
+    For Each cell In sheetTech.Range("H" & vRowIndexFrom, "AL" & vRowIndexFrom).Cells
         If cell.Value <> "" Then
             vals = Split(cell.Value, "::")
             
@@ -184,11 +225,11 @@ Sub copyFromTechToTable()
         End If
     Next
     
-    sheetTable.Range("H1").Value = "Расходы б/н"
-    sheetTable.Range("H2").Value = sumNonCash
+    'sheetTable.Range("H1").Value = "Расходы б/н"
+    sheetTable.Range("H" & vRowIndexTo).Value = sumNonCash
     
-    sheetTable.Range("I1").Value = "Расходы н"
-    sheetTable.Range("I2").Value = sumCash
+    'sheetTable.Range("I1").Value = "Расходы н"
+    sheetTable.Range("I" & vRowIndexTo).Value = sumCash
     
     
     
@@ -196,7 +237,7 @@ Sub copyFromTechToTable()
     
     companies = ""
     
-    For Each cell In sheetTech.Range("AM2", "AV2").Cells
+    For Each cell In sheetTech.Range("AM" & vRowIndexFrom, "AV" & vRowIndexFrom).Cells
         If cell.Value <> "" Then
             If companies = "" Then
                 companies = cell.Value
@@ -207,57 +248,57 @@ Sub copyFromTechToTable()
         End If
     Next
     
-    sheetTable.Range("J1").Value = "Название компании"
-    sheetTable.Range("J2").Value = companies
+    'sheetTable.Range("J1").Value = "Название компании"
+    sheetTable.Range("J" & vRowIndexTo).Value = companies
     
         
     Dim mainIncome As Double
     mainIncome = 0#
     
-    For Each cell In sheetTech.Range("AW2", "BF2").Cells
+    For Each cell In sheetTech.Range("AW" & vRowIndexFrom, "BF" & vRowIndexFrom).Cells
         If cell.Value <> "" Then
             mainIncome = mainIncome + CDbl(cell.Value)
             
         End If
     Next
     
-    sheetTable.Range("K1").Value = "Основной приход"
-    sheetTable.Range("K2").Value = mainIncome
+    'sheetTable.Range("K1").Value = "Основной приход"
+    sheetTable.Range("K" & vRowIndexTo).Value = mainIncome
     
     
     Dim sumLecturers As Double
     sumLecturers = 0#
     
-    For Each cell In sheetTech.Range("BG2", "BP2").Cells
+    For Each cell In sheetTech.Range("BG" & vRowIndexFrom, "BP" & vRowIndexFrom).Cells
         If cell.Value <> "" Then
             sumLecturers = sumLecturers + CDbl(cell.Value)
             
         End If
     Next
     
-    sheetTable.Range("L1").Value = "Лекторские"
-    sheetTable.Range("L2").Value = sumLecturers
+    'sheetTable.Range("L1").Value = "Лекторские"
+    sheetTable.Range("L" & vRowIndexTo).Value = sumLecturers
     
     
     Dim fees As Double
     fees = 0#
     
-    For Each cell In sheetTech.Range("BQ2", "BZ2").Cells
+    For Each cell In sheetTech.Range("BQ" & vRowIndexFrom, "BZ" & vRowIndexFrom).Cells
         If cell.Value <> "" Then
             fees = fees + CDbl(cell.Value)
             
         End If
     Next
     
-    sheetTable.Range("M1").Value = "Комиссия"
-    sheetTable.Range("M2").Value = fees
+    'sheetTable.Range("M1").Value = "Комиссия"
+    sheetTable.Range("M" & vRowIndexTo).Value = fees
     
     
     Dim legalEntities As String
     
     legalEntities = ""
     
-    For Each cell In sheetTech.Range("CA2", "CJ2").Cells
+    For Each cell In sheetTech.Range("CA" & vRowIndexFrom, "CJ" & vRowIndexFrom).Cells
         If cell.Value <> "" Then
             If legalEntities = "" Then
                 legalEntities = cell.Value
@@ -268,8 +309,8 @@ Sub copyFromTechToTable()
         End If
     Next
     
-    sheetTable.Range("N1").Value = "Юрлица"
-    sheetTable.Range("N2").Value = legalEntities
+    'sheetTable.Range("N1").Value = "Юрлица"
+    sheetTable.Range("N" & vRowIndexTo).Value = legalEntities
     
 End Sub
 
