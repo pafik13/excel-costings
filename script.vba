@@ -1,3 +1,10 @@
+Sub copyFromCostsToTable()
+
+    copyFromCostsToTech
+    copyFromTechToTable
+
+End Sub
+
 Sub copyFromCostsToTech()
     MsgBox "Start copyFromCostsToTech"
     Dim sheetTech As Worksheet
@@ -146,8 +153,8 @@ Sub copyFromCostsToTech()
         vStartColIndex = vStartColIndex + 1
     Next
     
-    MsgBox vStartColIndex
-    MsgBox vRowIndex
+    'MsgBox vStartColIndex
+    'MsgBox vRowIndex
 End Sub
 
 Sub copyFromTechToTable()
