@@ -1,4 +1,243 @@
 Option Explicit
+
+Sub CustomRaiseError(ByRef message As String)
+    MsgBox "Не найден идентификатор сметы"
+    MsgBox 1 / 0
+End Sub
+
+Sub DeleteFromCellMenu()
+    Dim ContextMenu As CommandBar
+    Dim ctrl As CommandBarControl
+
+    ' Set ContextMenu to the Cell context menu.
+    Set ContextMenu = Application.CommandBars("Cell")
+
+    ' Delete the custom controls with the Tag : My_Cell_Control_Tag.
+    For Each ctrl In ContextMenu.Controls
+        If ctrl.Tag = "Tag_copyFromTableToCosts" Then
+            ctrl.Delete
+        End If
+    Next ctrl
+
+    ' Delete the custom built-in Save button.
+    On Error Resume Next
+    ContextMenu.FindControl(ID:=3).Delete
+    On Error GoTo 0
+End Sub
+
+Sub AddToContextMenu()
+    Dim ContextMenu As CommandBar
+    Dim MySubMenu As CommandBarControl
+
+    ' Delete the controls first to avoid duplicates.
+    'Call DeleteFromCellMenu
+
+    ' Set ContextMenu to the Cell context menu.
+    Set ContextMenu = Application.CommandBars("Cell")
+
+    ' Add one built-in button(Save = 3) to the Cell context menu.
+    'ContextMenu.FindControl(ID:=3).Delete
+
+    ' Add one custom button to the Cell context menu.
+    With ContextMenu.Controls.Add(Type:=msoControlButton, before:=1)
+        .OnAction = "ЭтаКнига.copyFromTableToCosts"
+        .FaceId = 59
+        .Caption = "Выгрузить в смету"
+        .Tag = "Tag_copyFromTableToCosts"
+    End With
+End Sub
+
+Sub clearCosts()
+    Dim sheetCosts As Worksheet
+    
+    Set sheetCosts = getOrCreateSheet("смета")
+    
+    sheetCosts.Range("J3").Value = ""
+    
+    sheetCosts.Range("E3").Value = ""
+    sheetCosts.Range("E4").Value = ""
+    sheetCosts.Range("E5").Value = ""
+    sheetCosts.Range("E6").Value = ""
+    sheetCosts.Range("E7").Value = ""
+    sheetCosts.Range("E8").Value = ""
+    
+    Dim cell As Range
+    For Each cell In sheetCosts.Range("B11", "B12").Cells
+        With cell
+            .Value = ""
+            .Offset(0, 1).Value = ""
+        End With
+    Next
+    
+    For Each cell In sheetCosts.Range("B15", "B43").Cells
+        With cell
+            .Value = ""
+            .Offset(0, 1).Value = ""
+        End With
+    Next
+    
+    For Each cell In sheetCosts.Range("A49", "A58").Cells
+        cell.Value = ""
+    Next
+    
+    For Each cell In sheetCosts.Range("E49", "E58").Cells
+        cell.Value = ""
+    Next
+    
+    For Each cell In sheetCosts.Range("F49", "F58").Cells
+        cell.Value = ""
+    Next
+    
+    For Each cell In sheetCosts.Range("H49", "H58").Cells
+        cell.Value = ""
+    Next
+    
+    For Each cell In sheetCosts.Range("J49", "J58").Cells
+        cell.Value = ""
+    Next
+End Sub
+
+Sub copyFromTableToCosts()
+    MsgBox "Start copyFromTableToCosts"
+    
+    Dim sheetTech As Worksheet
+    Dim sheetCosts As Worksheet
+    Dim sheetTable As Worksheet
+    
+    Set sheetTech = getOrCreateSheet("техн")
+    Set sheetCosts = getOrCreateSheet("смета")
+    Set sheetTable = getOrCreateSheet("таблица")
+    
+    Dim vId As String
+    Dim vRowIndexFrom As Integer
+
+    vId = CStr(sheetTable.Range("A" & CStr(Selection.Row)).Value)
+    If vId = "" Then
+        CustomRaiseError "Не найден идентификатор сметы"
+    ElseIf InStr(vId, "_") = 0 Then
+        CustomRaiseError vId & " не соответствует индентификатору"
+    Else
+        Dim rngId As Range
+        Set rngId = sheetTech.Range("A:A").Find(vId)
+        If rngId Is Nothing Then
+            CustomRaiseError "Не найден идентификатор сметы на странице Техн"
+        Else
+            vRowIndexFrom = rngId.Row
+        End If
+    End If
+        
+    clearCosts
+    
+    sheetCosts.Range("J3").Value = vId
+    
+    copyValue sheetTech.Range("B" & vRowIndexFrom), sheetCosts.Range("E3")
+    copyValue sheetTech.Range("C" & vRowIndexFrom), sheetCosts.Range("E4")
+    copyValue sheetTech.Range("D" & vRowIndexFrom), sheetCosts.Range("E5")
+    copyValue sheetTech.Range("E" & vRowIndexFrom), sheetCosts.Range("E6")
+    copyValue sheetTech.Range("F" & vRowIndexFrom), sheetCosts.Range("E7")
+    copyValue sheetTech.Range("G" & vRowIndexFrom), sheetCosts.Range("E8")
+    
+    Dim vSumType As String
+    Dim vals() As String
+    Dim cell As Range
+    Set cell = sheetTech.Range("H" & vRowIndexFrom)
+    If cell.Value <> "" And cell.Value <> "::" Then
+        vals = Split(cell.Value, "::")
+        
+        vSumType = CStr(vals(0))
+        If vSumType = "БН" Or vSumType = "Н" Then
+            With sheetCosts.Range("B" & 11)
+                .Value = CDbl(vals(1))
+                .Offset(0, 1).Value = vSumType
+            End With
+        Else
+           CustomRaiseError "Значение отличное от БН и Н для сумм сметы"
+        End If
+    End If
+    
+    Set cell = sheetTech.Range("I" & vRowIndexFrom)
+    If cell.Value <> "" And cell.Value <> "::" Then
+        vals = Split(cell.Value, "::")
+        
+        vSumType = CStr(vals(0))
+        If vSumType = "БН" Or vSumType = "Н" Then
+            With sheetCosts.Range("B" & 12)
+                .Value = CDbl(vals(1))
+                .Offset(0, 1).Value = vSumType
+            End With
+        Else
+            CustomRaiseError "Значение отличное от БН и Н для сумм сметы"
+        End If
+    End If
+    
+    Dim vRowIndexTo As Integer
+    vRowIndexTo = 15
+    For Each cell In sheetTech.Range("J" & vRowIndexFrom, "AL" & vRowIndexFrom).Cells
+        If cell.Value <> "" And cell.Value <> "::" Then
+            vals = Split(cell.Value, "::")
+            
+            vSumType = CStr(vals(0))
+            If vSumType = "БН" Or vSumType = "Н" Then
+                With sheetCosts.Range("B" & vRowIndexTo)
+                    .Value = CDbl(vals(1))
+                    .Offset(0, 1).Value = vSumType
+                End With
+            Else
+                CustomRaiseError "Значение отличное от БН и Н для сумм сметы"
+            End If
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("AM" & vRowIndexFrom, "AV" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("A" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+      
+    
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("AW" & vRowIndexFrom, "BF" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("E" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+    
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("BG" & vRowIndexFrom, "BP" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("F" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+    
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("BQ" & vRowIndexFrom, "BZ" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("H" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+        
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("CA" & vRowIndexFrom, "CJ" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("J" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+
+    'MsgBox
+End Sub
+
 Private Sub copyFromExternalCosts()
     'On Error GoTo ErrHandler
     Dim fileName As String, sheet As Worksheet
@@ -11,6 +250,7 @@ Private Sub copyFromExternalCosts()
         .Title = "Please select the file."
         .Filters.Clear
         .Filters.Add "Excel 2010", "*.xlsx"
+        .Filters.Add "Excel 2010 (Macros)", "*.xlsm"
     
         If .Show = True Then
             fileName = Dir(.SelectedItems(1))
@@ -49,6 +289,9 @@ Sub ReadDataFromFile(ByVal filePath As String)
     Set sheetCostsExternal = src.Worksheets("смета")
     Set sheetCostsInternal = getOrCreateSheet("смета")
     
+    clearCosts
+    
+    copyValue sheetCostsExternal.Range("J3"), sheetCostsInternal.Range("J3")
     copyValue sheetCostsExternal.Range("E3"), sheetCostsInternal.Range("E3")
     copyValue sheetCostsExternal.Range("E4"), sheetCostsInternal.Range("E4")
     copyValue sheetCostsExternal.Range("E5"), sheetCostsInternal.Range("E5")
@@ -190,6 +433,7 @@ Sub copyFromCostsToTech()
     'copyValue sheetCosts.Range("A43"), sheetTech.Cells(1, 38)
 
     ' Values
+    Dim cell As Range
     Dim vStartColIndex As Integer
     vStartColIndex = 8
     For Each cell In sheetCosts.Range("B11", "B12").Cells
@@ -271,7 +515,7 @@ Sub copyFromTechToTable()
         
         Set rngId = sheetTech.Range("A" & rngTableStart.Value, "A" & rngTableEnd.Value).Find(vId)
         If rngId Is Nothing Then
-            Err.Raise -20001, "Копирование из Техн", "Не найден текущий идентификатор"
+            CustomRaiseError "Не найден текущий идентификатор"
         Else
             vRowIndexFrom = rngId.Row
         End If
@@ -300,6 +544,8 @@ Sub copyFromTechToTable()
     ' Values
     copyValue sheetTech.Range("B" & vRowIndexFrom, "G" & vRowIndexFrom), sheetTable.Range("B" & vRowIndexTo, "G" & vRowIndexTo)
     
+    Dim cell As Range
+    Dim vals() As String
     Dim sumCash As Double
     Dim sumNonCash As Double
     
@@ -307,7 +553,7 @@ Sub copyFromTechToTable()
     sumNonCash = 0#
     
     For Each cell In sheetTech.Range("H" & vRowIndexFrom, "AL" & vRowIndexFrom).Cells
-        If cell.Value <> "" Then
+        If cell.Value <> "" And cell.Value <> "::" Then
             vals = Split(cell.Value, "::")
             
             If vals(0) = "БН" Then
@@ -315,7 +561,7 @@ Sub copyFromTechToTable()
             ElseIf vals(0) = "Н" Then
                 sumCash = sumCash + CDbl(vals(1))
             Else
-                Err.Raise -20001, "Копирование Техн в Таблица", "Значение отличное от БН и Н для сумм сметы"
+                CustomRaiseError "Значение отличное от БН и Н для сумм сметы"
             End If
             
         End If
