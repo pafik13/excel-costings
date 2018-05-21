@@ -1,3 +1,92 @@
+Option Explicit
+Private Sub copyFromExternalCosts()
+    'On Error GoTo ErrHandler
+    Dim fileName As String, sheet As Worksheet
+    Dim fd As Office.FileDialog
+
+    Set fd = Application.FileDialog(msoFileDialogFilePicker)
+
+    With fd
+        .AllowMultiSelect = False
+        .Title = "Please select the file."
+        .Filters.Clear
+        .Filters.Add "Excel 2010", "*.xlsx"
+    
+        If .Show = True Then
+            fileName = Dir(.SelectedItems(1))
+        End If
+    End With
+
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+
+    If fileName <> "" Then
+        ReadDataFromFile (fileName)
+        
+        MsgBox fileName & " - файл обработан"
+    Else
+        MsgBox "Не выбран файл"
+    End If
+
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+
+End Sub
+
+Sub ReadDataFromFile(ByVal filePath As String)
+    On Error GoTo ErrHandler
+    Application.ScreenUpdating = False
+    
+    Dim src As Workbook
+    
+    ' OPEN THE SOURCE EXCEL WORKBOOK IN "READ ONLY MODE".
+    Set src = Workbooks.Open(filePath, True, True)
+    
+    ' GET THE TOTAL ROWS FROM THE SOURCE WORKBOOK.
+    Dim sheetCostsExternal As Worksheet
+    Dim sheetCostsInternal As Worksheet
+    
+    Set sheetCostsExternal = src.Worksheets("смета")
+    Set sheetCostsInternal = getOrCreateSheet("смета")
+    
+    copyValue sheetCostsExternal.Range("E3"), sheetCostsInternal.Range("E3")
+    copyValue sheetCostsExternal.Range("E4"), sheetCostsInternal.Range("E4")
+    copyValue sheetCostsExternal.Range("E5"), sheetCostsInternal.Range("E5")
+    copyValue sheetCostsExternal.Range("E6"), sheetCostsInternal.Range("E6")
+    copyValue sheetCostsExternal.Range("E7"), sheetCostsInternal.Range("E7")
+    copyValue sheetCostsExternal.Range("E8"), sheetCostsInternal.Range("E8")
+    
+
+    ' Values
+    copyValue sheetCostsExternal.Range("B11", "C12"), sheetCostsInternal.Range("B11", "C12")
+    
+    copyValue sheetCostsExternal.Range("B15", "C43"), sheetCostsInternal.Range("B15", "C43")
+    
+    ' Company
+    copyValue sheetCostsExternal.Range("A49", "A58"), sheetCostsInternal.Range("A49", "A58")
+    
+    ' Main income
+    copyValue sheetCostsExternal.Range("E49", "E58"), sheetCostsInternal.Range("E49", "E58")
+    
+    ' Lecturer sums
+    copyValue sheetCostsExternal.Range("F49", "F58"), sheetCostsInternal.Range("F49", "F58")
+
+    ' Fees
+    copyValue sheetCostsExternal.Range("H49", "H58"), sheetCostsInternal.Range("H49", "H58")
+    
+    ' Legal entities
+    copyValue sheetCostsExternal.Range("J49", "J58"), sheetCostsInternal.Range("J49", "J58")
+    
+    ' CLOSE THE SOURCE FILE.
+    src.Close False             ' FALSE - DON'T SAVE THE SOURCE FILE.
+    Set src = Nothing
+    
+ErrHandler:
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+    'Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
 Sub copyFromCostsToTable()
 
     copyFromCostsToTech
