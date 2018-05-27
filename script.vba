@@ -49,10 +49,13 @@ End Sub
 
 Sub clearCosts()
     Dim sheetCosts As Worksheet
+    Dim cell As Range
     
     Set sheetCosts = getOrCreateSheet("смета")
     
     sheetCosts.Range("J3").Value = ""
+    
+    sheetCosts.Range("H5").Value = ""
     
     sheetCosts.Range("E3").Value = ""
     sheetCosts.Range("E4").Value = ""
@@ -60,8 +63,53 @@ Sub clearCosts()
     sheetCosts.Range("E6").Value = ""
     sheetCosts.Range("E7").Value = ""
     sheetCosts.Range("E8").Value = ""
+    sheetCosts.Range("E9").Value = ""
     
-    Dim cell As Range
+    sheetCosts.Range("D11").Value = ""
+    sheetCosts.Range("E11").Value = ""
+    
+    For Each cell In sheetCosts.Range("D12", "J13").Cells
+        cell.Value = ""
+    Next
+    
+    sheetCosts.Range("D14").Value = ""
+
+    For Each cell In sheetCosts.Range("D15", "E18").Cells
+        cell.Value = ""
+    Next
+
+    For Each cell In sheetCosts.Range("D19", "D22").Cells
+        cell.Value = ""
+    Next
+
+    sheetCosts.Range("D23").Value = ""
+    sheetCosts.Range("D28").Value = ""
+    sheetCosts.Range("D33").Value = ""
+    
+    For Each cell In sheetCosts.Range("E23", "E35").Cells
+        cell.Value = ""
+    Next
+
+    sheetCosts.Range("E36").Value = ""
+    sheetCosts.Range("F36").Value = ""
+    sheetCosts.Range("G36").Value = ""
+    sheetCosts.Range("E37").Value = ""
+    
+    For Each cell In sheetCosts.Range("D38", "E43").Cells
+        cell.Value = ""
+    Next
+  
+    sheetCosts.Range("A41").Value = ""
+    sheetCosts.Range("A42").Value = ""
+    
+    For Each cell In sheetCosts.Range("B49", "B58").Cells
+        cell.Value = ""
+    Next
+    
+    For Each cell In sheetCosts.Range("G49", "G58").Cells
+        cell.Value = ""
+    Next
+    
     For Each cell In sheetCosts.Range("B11", "B12").Cells
         With cell
             .Value = ""
@@ -238,7 +286,7 @@ Sub copyFromTableToCosts()
     'MsgBox
 End Sub
 
-Private Sub copyFromExternalCosts()
+Sub copyFromExternalCosts()
     'On Error GoTo ErrHandler
     Dim fileName As String, sheet As Worksheet
     Dim fd As Office.FileDialog
@@ -250,7 +298,7 @@ Private Sub copyFromExternalCosts()
         .Title = "Please select the file."
         .Filters.Clear
         .Filters.Add "Excel 2010", "*.xlsx"
-        .Filters.Add "Excel 2010 (Macros)", "*.xlsm"
+        .Filters.Add "Excel 2010 (Macro)", "*.xlsm"
     
         If .Show = True Then
             fileName = Dir(.SelectedItems(1))
@@ -261,7 +309,7 @@ Private Sub copyFromExternalCosts()
     Application.DisplayAlerts = False
 
     If fileName <> "" Then
-        ReadDataFromFile (fileName)
+        readDataFromFile (fileName)
         
         MsgBox fileName & " - файл обработан"
     Else
@@ -273,7 +321,7 @@ Private Sub copyFromExternalCosts()
 
 End Sub
 
-Sub ReadDataFromFile(ByVal filePath As String)
+Sub readDataFromFile(ByVal filePath As String)
     On Error GoTo ErrHandler
     Application.ScreenUpdating = False
     
@@ -291,6 +339,8 @@ Sub ReadDataFromFile(ByVal filePath As String)
     
     clearCosts
     
+    copyValue sheetCostsExternal.Range("H5"), sheetCostsInternal.Range("H5")
+    
     copyValue sheetCostsExternal.Range("J3"), sheetCostsInternal.Range("J3")
     copyValue sheetCostsExternal.Range("E3"), sheetCostsInternal.Range("E3")
     copyValue sheetCostsExternal.Range("E4"), sheetCostsInternal.Range("E4")
@@ -298,9 +348,32 @@ Sub ReadDataFromFile(ByVal filePath As String)
     copyValue sheetCostsExternal.Range("E6"), sheetCostsInternal.Range("E6")
     copyValue sheetCostsExternal.Range("E7"), sheetCostsInternal.Range("E7")
     copyValue sheetCostsExternal.Range("E8"), sheetCostsInternal.Range("E8")
-    
+    copyValue sheetCostsExternal.Range("E9"), sheetCostsInternal.Range("E9")
 
     ' Values
+    copyValue sheetCostsExternal.Range("D11", "E11"), sheetCostsInternal.Range("D11", "E11")
+    copyValue sheetCostsExternal.Range("D12", "J13"), sheetCostsInternal.Range("D12", "J13")
+    copyValue sheetCostsExternal.Range("D14"), sheetCostsInternal.Range("D14")
+    
+    copyValue sheetCostsExternal.Range("D15", "E18"), sheetCostsInternal.Range("D15", "E18")
+    copyValue sheetCostsExternal.Range("D19", "D22"), sheetCostsInternal.Range("D19", "D22")
+    copyValue sheetCostsExternal.Range("D23"), sheetCostsInternal.Range("D23")
+    copyValue sheetCostsExternal.Range("D28"), sheetCostsInternal.Range("D28")
+    copyValue sheetCostsExternal.Range("D33"), sheetCostsInternal.Range("D33")
+    copyValue sheetCostsExternal.Range("E23", "E35"), sheetCostsInternal.Range("E23", "E35")
+    copyValue sheetCostsExternal.Range("E36"), sheetCostsInternal.Range("E36")
+    copyValue sheetCostsExternal.Range("F36"), sheetCostsInternal.Range("F36")
+    copyValue sheetCostsExternal.Range("G36"), sheetCostsInternal.Range("G36")
+    copyValue sheetCostsExternal.Range("E37"), sheetCostsInternal.Range("E37")
+    copyValue sheetCostsExternal.Range("D38", "E43"), sheetCostsInternal.Range("D38", "E43")
+    copyValue sheetCostsExternal.Range("A41"), sheetCostsInternal.Range("A41")
+    copyValue sheetCostsExternal.Range("A42"), sheetCostsInternal.Range("A42")
+    
+    copyValue sheetCostsExternal.Range("B49", "B58"), sheetCostsInternal.Range("B49", "B58")
+    copyValue sheetCostsExternal.Range("G49", "G58"), sheetCostsInternal.Range("G49", "G58")
+
+    
+    
     copyValue sheetCostsExternal.Range("B11", "C12"), sheetCostsInternal.Range("B11", "C12")
     
     copyValue sheetCostsExternal.Range("B15", "C43"), sheetCostsInternal.Range("B15", "C43")
