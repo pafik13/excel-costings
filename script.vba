@@ -464,13 +464,14 @@ Sub copyFromCostsToTech()
     'copyValue sheetCosts.Range("A8"), sheetTech.Range("G1")
     
     ' Values
+    copyValue sheetCosts.Range("H5"), sheetTech.Range("CK" & vRowIndex)
     copyValue sheetCosts.Range("E3"), sheetTech.Range("B" & vRowIndex)
     copyValue sheetCosts.Range("E4"), sheetTech.Range("C" & vRowIndex)
     copyValue sheetCosts.Range("E5"), sheetTech.Range("D" & vRowIndex)
     copyValue sheetCosts.Range("E6"), sheetTech.Range("E" & vRowIndex)
     copyValue sheetCosts.Range("E7"), sheetTech.Range("F" & vRowIndex)
     copyValue sheetCosts.Range("E8"), sheetTech.Range("G" & vRowIndex)
-    
+    copyValue sheetCosts.Range("E9"), sheetTech.Range("CL" & vRowIndex)
     
     ' Headers
     'copyValue sheetCosts.Range("A11"), sheetTech.Cells(1, 8)
@@ -555,6 +556,83 @@ Sub copyFromCostsToTech()
     ' Legal entities
     For Each cell In sheetCosts.Range("J49", "J58").Cells
         'sheetTech.Cells(1, vStartColIndex).Value = "Юрлицо"
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+    
+    ' NEW COPIEST DATA
+    
+    vStartColIndex = 91
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("D11").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("E11").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    For Each cell In sheetCosts.Range("D12", "J13").Cells
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("D14").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    For Each cell In sheetCosts.Range("D15", "E18").Cells
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+
+    For Each cell In sheetCosts.Range("D19", "D22").Cells
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("D23").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("D28").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("D33").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    For Each cell In sheetCosts.Range("E23", "E35").Cells
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("E36").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("F36").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("G36").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("E37").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    For Each cell In sheetCosts.Range("D38", "E43").Cells
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+  
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("A41").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("A42").Value
+    vStartColIndex = vStartColIndex + 1
+    
+    For Each cell In sheetCosts.Range("B49", "B58").Cells
+        sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+        vStartColIndex = vStartColIndex + 1
+    Next
+    
+    For Each cell In sheetCosts.Range("G49", "G58").Cells
         sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
         vStartColIndex = vStartColIndex + 1
     Next
