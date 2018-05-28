@@ -283,6 +283,113 @@ Sub copyFromTableToCosts()
         vRowIndexTo = vRowIndexTo + 1
     Next
 
+
+
+
+    ' NEW FIELDS
+    Dim vIterCount As Integer
+    
+    copyValue sheetTech.Range("CK" & vRowIndexFrom), sheetCosts.Range("H5")
+    copyValue sheetTech.Range("CL" & vRowIndexFrom), sheetCosts.Range("E9")
+    
+    copyValue sheetTech.Range("CM" & vRowIndexFrom), sheetCosts.Range("D11")
+    copyValue sheetTech.Range("CN" & vRowIndexFrom), sheetCosts.Range("E11")
+    
+    vRowIndexTo = 12
+    vIterCount = 0
+    For Each cell In sheetTech.Range("CO" & vRowIndexFrom, "DB" & vRowIndexFrom).Cells
+        vIterCount = vIterCount + 1
+        
+        If vIterCount Mod 8 = 0 Then
+            vRowIndexTo = vRowIndexTo + 1
+            vIterCount = vIterCount + 1
+        End If
+        
+        sheetCosts.Range("D" & vRowIndexTo).Offset(0, vIterCount Mod 8 - 1).Value = cell.Value
+        
+    Next
+    
+    copyValue sheetTech.Range("DC" & vRowIndexFrom), sheetCosts.Range("D14")
+    
+    vRowIndexTo = 15
+    vIterCount = 0
+    For Each cell In sheetTech.Range("DD" & vRowIndexFrom, "DK" & vRowIndexFrom).Cells
+        vIterCount = vIterCount + 1
+        
+        If vIterCount Mod 2 <> 0 Then
+            sheetCosts.Range("D" & vRowIndexTo).Value = cell.Value
+            
+        Else
+            sheetCosts.Range("E" & vRowIndexTo).Value = cell.Value
+            vRowIndexTo = vRowIndexTo + 1
+        End If
+        
+    Next
+    
+    vRowIndexTo = 19
+    For Each cell In sheetTech.Range("DL" & vRowIndexFrom, "DO" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("D" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+    
+    
+    copyValue sheetTech.Range("DP" & vRowIndexFrom), sheetCosts.Range("D23")
+    copyValue sheetTech.Range("DQ" & vRowIndexFrom), sheetCosts.Range("D28")
+    copyValue sheetTech.Range("DR" & vRowIndexFrom), sheetCosts.Range("D33")
+    
+    vRowIndexTo = 23
+    For Each cell In sheetTech.Range("DS" & vRowIndexFrom, "EE" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("E" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+
+    copyValue sheetTech.Range("EF" & vRowIndexFrom), sheetCosts.Range("E36")
+    copyValue sheetTech.Range("EG" & vRowIndexFrom), sheetCosts.Range("F36")
+    copyValue sheetTech.Range("EH" & vRowIndexFrom), sheetCosts.Range("G36")
+    copyValue sheetTech.Range("EI" & vRowIndexFrom), sheetCosts.Range("E37")
+
+    vRowIndexTo = 38
+    vIterCount = 0
+    For Each cell In sheetTech.Range("EJ" & vRowIndexFrom, "EU" & vRowIndexFrom).Cells
+        vIterCount = vIterCount + 1
+        
+        If vIterCount Mod 2 <> 0 Then
+            sheetCosts.Range("D" & vRowIndexTo).Value = cell.Value
+            
+        Else
+            sheetCosts.Range("E" & vRowIndexTo).Value = cell.Value
+            vRowIndexTo = vRowIndexTo + 1
+        End If
+        
+    Next
+
+    copyValue sheetTech.Range("EV" & vRowIndexFrom), sheetCosts.Range("A41")
+    copyValue sheetTech.Range("EW" & vRowIndexFrom), sheetCosts.Range("A42")
+
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("EX" & vRowIndexFrom, "FG" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("B" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+
+    vRowIndexTo = 49
+    For Each cell In sheetTech.Range("FH" & vRowIndexFrom, "FQ" & vRowIndexFrom).Cells
+        If cell.Value <> "" Then
+            sheetCosts.Range("G" & vRowIndexTo).Value = cell.Value
+            
+        End If
+        vRowIndexTo = vRowIndexTo + 1
+    Next
+
     'MsgBox
 End Sub
 
@@ -563,8 +670,8 @@ Sub copyFromCostsToTech()
     ' NEW COPIEST DATA
     
     vStartColIndex = 91
-    sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
-    vStartColIndex = vStartColIndex + 1
+    'sheetTech.Cells(vRowIndex, vStartColIndex).Value = cell.Value
+    'vStartColIndex = vStartColIndex + 1
     
     sheetTech.Cells(vRowIndex, vStartColIndex).Value = sheetCosts.Range("D11").Value
     vStartColIndex = vStartColIndex + 1
