@@ -289,6 +289,10 @@ Sub copyFromTableToCosts()
     ' NEW FIELDS
     Dim vIterCount As Integer
     
+    copyValue sheetTech.Range("FR" & vRowIndexFrom), sheetCosts.Range("G2")
+    copyValue sheetTech.Range("FS" & vRowIndexFrom), sheetCosts.Range("J4")
+    copyValue sheetTech.Range("FT" & vRowIndexFrom), sheetCosts.Range("J5")
+    
     copyValue sheetTech.Range("CK" & vRowIndexFrom), sheetCosts.Range("H5")
     copyValue sheetTech.Range("CL" & vRowIndexFrom), sheetCosts.Range("E9")
     
@@ -446,6 +450,10 @@ Sub readDataFromFile(ByVal filePath As String)
     
     clearCosts
     
+    copyValue sheetCostsExternal.Range("G2"), sheetCostsInternal.Range("G2")
+    copyValue sheetCostsExternal.Range("J4"), sheetCostsInternal.Range("J4")
+    copyValue sheetCostsExternal.Range("J5"), sheetCostsInternal.Range("J5")
+    
     copyValue sheetCostsExternal.Range("H5"), sheetCostsInternal.Range("H5")
     
     copyValue sheetCostsExternal.Range("J3"), sheetCostsInternal.Range("J3")
@@ -559,6 +567,8 @@ Sub copyFromCostsToTech()
     Set rngId = sheetTech.Range("E1")
     rngId.Value = vId
     
+    
+    sheetCosts.Range("J4").Value = Now
     'Exit Sub
     
     
@@ -571,6 +581,11 @@ Sub copyFromCostsToTech()
     'copyValue sheetCosts.Range("A8"), sheetTech.Range("G1")
     
     ' Values
+        
+    copyValue sheetCosts.Range("G2"), sheetTech.Range("FR" & vRowIndex)
+    copyValue sheetCosts.Range("J4"), sheetTech.Range("FS" & vRowIndex)
+    copyValue sheetCosts.Range("J5"), sheetTech.Range("FT" & vRowIndex)
+    
     copyValue sheetCosts.Range("H5"), sheetTech.Range("CK" & vRowIndex)
     copyValue sheetCosts.Range("E3"), sheetTech.Range("B" & vRowIndex)
     copyValue sheetCosts.Range("E4"), sheetTech.Range("C" & vRowIndex)
